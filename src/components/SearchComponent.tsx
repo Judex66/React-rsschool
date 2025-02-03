@@ -1,35 +1,22 @@
-import React from 'react';
+import { useState } from 'react';
 interface Props {
-  searchResult: (search: string) => void;
+  searchValue: (search: string) => void;
 }
-class SearchComponent extends React.Component<Props> {
-  state = {
-    search: '',
+export default function SearchComponent({ searchValue }: Props) {
+  const [search, setSearch] = useState('');
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value.trim());
+    console.log(e.target.value.trim());
   };
-  componentDidMount() {
-    this.setState({ search: localStorage.getItem('search') });
-  }
-  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ search: e.target.value.trim() });
-  };
-  submitButton = () => {
-    this.props.searchResult(this.state.search);
-    localStorage.setItem('search', this.state.search);
-  };
-  render(): React.ReactNode {
-    return (
-      <div>
-        <input
-          type="text"
-          className="searchPlace"
-          defaultValue={this.state.search}
-          placeholder="Search..."
-          onChange={this.handleChange}
-        />
-        <button onClick={this.submitButton}>Search</button>
-      </div>
-    );
-  }
+  return (
+    <>
+      <input
+        type="text"
+        className="searchPlace"
+        placeholder="Search..."
+        onChange={handleChange}
+      />
+      <button onClick={() => searchValue(search)}>Search</button>
+    </>
+  );
 }
-
-export default SearchComponent;

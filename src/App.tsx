@@ -1,14 +1,13 @@
 import './App.css';
 import '../styles/LoadingAnimation.css';
-import ResultComponent from './components/ResultComponent';
-import ErrorBoundary from './CatchError/ErrorBoundary';
+// import ResultComponent from './components/ResultComponent';
+
+import MainPage from './pages/MainPage';
 
 function App() {
   return (
     <>
-      <ErrorBoundary>
-        <ResultComponent />
-      </ErrorBoundary>
+      <MainPage />
     </>
   );
 }
