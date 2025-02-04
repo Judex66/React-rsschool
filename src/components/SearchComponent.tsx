@@ -6,7 +6,6 @@ export default function SearchComponent({ searchValue }: Props) {
   const [search, setSearch] = useState('');
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value.trim());
-    console.log(e.target.value.trim());
   };
   return (
     <>

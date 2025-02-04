@@ -3,61 +3,54 @@ import { useEffect, useState } from 'react';
 import LoadingComponent from '../components/Loading';
 import Pagination from '../components/Pagination';
 import SearchComponent from '../components/SearchComponent';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function MainPage() {
   interface Data {
     name: string;
-    sprites: Sprites;
+    id: number;
+    status: string;
+    gender: string;
+    image: string;
+    origin: Origin;
   }
-  interface Sprites {
-    other: Other;
-  }
-  interface Other {
-    home: Home;
-  }
-  interface Home {
-    front_default: string;
+  interface Origin {
+    name: string;
   }
 
   const [filters, setFilters] = useState('');
   const [data, setData] = useState(Array<Data>());
 
   const [isloading, setIsloading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState(false);
   const [searchResalt, setSearchResult] = useState(Array<Data>());
 
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(2);
-
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = data.slice(indexOfFirstPost, indexOfLastPost);
+  const navigate = useNavigate();
+  const location = useLocation();
   const fetchData = async () => {
-    const pokemonsData = [];
-    try {
-      for (let i = 1; i <= 50; i++) {
-        const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`);
-        pokemonsData.push(res);
-      }
-      const results = await Promise.all(pokemonsData);
-      setData(results.map((response) => response.data));
-      setSearchResult(data);
-      setIsloading(true);
-    } catch (error) {
-      console.log(error);
-      setError(true);
-    }
+    const searchValue: string = filters;
+    await axios
+      .get(
+        `https://rickandmortyapi.com/api/character/?name=${searchValue}&page=${currentPage}`
+      )
+      .then((response) => {
+        const posts = response.data;
+        setData(posts.results);
+        setIsloading(true);
+        console.log(data);
+      });
   };
   const searchValue = (search: string) => {
     setFilters(search);
+    console.log(search);
   };
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [isloading, filters]);
   const paginate = (pageNumber: React.SetStateAction<number>) => {
     setCurrentPage(pageNumber);
-    console.log(currentPosts);
   };
   return (
     <>
@@ -67,13 +60,13 @@ export default function MainPage() {
           {!isloading ? (
             <LoadingComponent />
           ) : (
-            currentPosts.map((pokemon) => (
-              <div className="card" key={pokemon.name}>
-                <h2> {pokemon.name}</h2>
+            data.map((characters) => (
+              <div className="card" key={characters.id}>
+                <h2> {characters.name}</h2>
                 <img
                   className="img"
-                  src={pokemon?.sprites.other.home.front_default}
-                  alt={pokemon.name}
+                  src={characters?.image}
+                  alt={characters.name}
                 />
               </div>
             ))
