@@ -4,23 +4,24 @@ import LoadingComponent from '../components/Loading';
 import Pagination from '../components/Pagination';
 import SearchComponent from '../components/SearchComponent';
 import { useLocation, useNavigate } from 'react-router-dom';
-
+interface Info {
+  pages: number;
+}
+interface Data {
+  name: string;
+  id: number;
+  status: string;
+  gender: string;
+  image: string;
+  origin: Origin;
+}
+interface Origin {
+  name: string;
+}
 export default function MainPage() {
-  interface Data {
-    name: string;
-    id: number;
-    status: string;
-    gender: string;
-    image: string;
-    origin: Origin;
-  }
-  interface Origin {
-    name: string;
-  }
-
   const [filters, setFilters] = useState('');
   const [data, setData] = useState(Array<Data>());
-
+  const [paginationData, setPaginationData] = useState(0);
   const [isloading, setIsloading] = useState(false);
   const [error, setError] = useState(false);
   const [searchResalt, setSearchResult] = useState(Array<Data>());
@@ -38,6 +39,7 @@ export default function MainPage() {
       .then((response) => {
         const posts = response.data;
         setData(posts.results);
+        setPaginationData(posts.info.pages);
         setIsloading(true);
         console.log(data);
       });
@@ -48,14 +50,16 @@ export default function MainPage() {
   };
   useEffect(() => {
     fetchData();
-  }, [isloading, filters]);
+  }, [isloading, filters, currentPage]);
   const paginate = (pageNumber: React.SetStateAction<number>) => {
     setCurrentPage(pageNumber);
+    console.log(currentPage);
   };
   return (
     <>
       <div>
         <SearchComponent searchValue={searchValue} />
+        <Pagination pagination={paginationData} paginate={paginate} />
         <div className="cardFlex">
           {!isloading ? (
             <LoadingComponent />
@@ -72,11 +76,6 @@ export default function MainPage() {
             ))
           )}
         </div>
-        <Pagination
-          postsPerPage={postsPerPage}
-          totalPosts={data.length}
-          paginate={paginate}
-        />
       </div>
     </>
   );

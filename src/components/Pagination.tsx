@@ -1,16 +1,13 @@
+import '../styles/pagination.css';
+
 interface Pagination {
-  postsPerPage: number;
-  totalPosts: number;
+  pagination: number;
   paginate: (pageNumber: React.SetStateAction<number>) => void;
 }
-export default function Pagination({
-  postsPerPage,
-  totalPosts,
-  paginate,
-}: Pagination) {
+export default function Pagination({ pagination, paginate }: Pagination) {
   const pageNumbers = [];
 
-  for (let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++) {
+  for (let i = 1; i <= pagination; i++) {
     pageNumbers.push(i);
   }
 

@@ -1,0 +1,10 @@
+.pagination11{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.page-item{
+    padding: 5px;
+    border: 2px solid black;
+    cursor: pointer;
+}
