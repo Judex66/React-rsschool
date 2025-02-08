@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import '../styles/pagination.css';
 
 interface Pagination {
@@ -14,11 +15,11 @@ export default function Pagination({ pagination, paginate }: Pagination) {
   return (
     <div className="pagination11">
       {pageNumbers.map((number, index) => (
-        <div key={index} className="page-item">
+        <Link key={index} className="page-item" to={`/?page=${number}`}>
           <a onClick={() => paginate(number)} className="page-link">
             {number}
           </a>
-        </div>
+        </Link>
       ))}
     </div>
   );

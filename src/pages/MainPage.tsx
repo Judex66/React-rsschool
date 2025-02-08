@@ -3,77 +3,75 @@ import { useEffect, useState } from 'react';
 import LoadingComponent from '../components/Loading';
 import Pagination from '../components/Pagination';
 import SearchComponent from '../components/SearchComponent';
-import { useLocation, useNavigate } from 'react-router-dom';
-interface Info {
-  pages: number;
-}
-interface Data {
-  name: string;
-  id: number;
-  status: string;
-  gender: string;
-  image: string;
-  origin: Origin;
-}
-interface Origin {
-  name: string;
-}
+import Data from '../Interfaces/Api-result';
+import { Link, Outlet, useSearchParams } from 'react-router-dom';
+
 export default function MainPage() {
-  const [filters, setFilters] = useState('');
   const [data, setData] = useState(Array<Data>());
   const [paginationData, setPaginationData] = useState(0);
   const [isloading, setIsloading] = useState(false);
   const [error, setError] = useState(false);
-  const [searchResalt, setSearchResult] = useState(Array<Data>());
-
   const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(2);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const fetchData = async () => {
-    const searchValue: string = filters;
-    await axios
-      .get(
-        `https://rickandmortyapi.com/api/character/?name=${searchValue}&page=${currentPage}`
-      )
-      .then((response) => {
-        const posts = response.data;
-        setData(posts.results);
-        setPaginationData(posts.info.pages);
-        setIsloading(true);
-        console.log(data);
-      });
-  };
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const charQuery = searchParams.get('character') || '';
+
   const searchValue = (search: string) => {
-    setFilters(search);
-    console.log(search);
+    setSearchParams({ character: search });
   };
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await axios
+          .get(
+            `https://rickandmortyapi.com/api/character/?name=${charQuery}&page=${currentPage}`
+          )
+          .then((response) => {
+            const charac = response.data;
+            setData(charac.results);
+            setPaginationData(charac.info.pages);
+            setIsloading(true);
+          });
+      } catch {
+        setError(true);
+      }
+    };
     fetchData();
-  }, [isloading, filters, currentPage]);
+  }, [isloading, charQuery, currentPage]);
   const paginate = (pageNumber: React.SetStateAction<number>) => {
     setCurrentPage(pageNumber);
     console.log(currentPage);
   };
+  if (error) {
+    throw new Error('I have crashed!');
+  }
   return (
     <>
       <div>
-        <SearchComponent searchValue={searchValue} />
+        <SearchComponent searchValue={searchValue} charQuery={charQuery} />
         <Pagination pagination={paginationData} paginate={paginate} />
+        <Outlet />
         <div className="cardFlex">
           {!isloading ? (
             <LoadingComponent />
           ) : (
-            data.map((characters) => (
-              <div className="card" key={characters.id}>
-                <h2> {characters.name}</h2>
-                <img
-                  className="img"
-                  src={characters?.image}
-                  alt={characters.name}
-                />
-              </div>
-            ))
+            data
+              .filter((data) => data.name.includes(charQuery))
+              .map((characters) => (
+                <Link
+                  to={`/character/${characters.id}`}
+                  className="card"
+                  key={characters.id}
+                >
+                  <h2> {characters.name}</h2>
+                  <img
+                    className="img"
+                    src={characters?.image}
+                    alt={characters.name}
+                  />
+                </Link>
+              ))
           )}
         </div>
       </div>
