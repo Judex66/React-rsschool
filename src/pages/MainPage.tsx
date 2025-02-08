@@ -16,7 +16,6 @@ export default function MainPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const charQuery = searchParams.get('character') || '';
-
   const searchValue = (search: string) => {
     setSearchParams({ character: search });
   };
@@ -44,35 +43,41 @@ export default function MainPage() {
     console.log(currentPage);
   };
   if (error) {
-    throw new Error('I have crashed!');
+    return (
+      <>
+        <p>Ошибка подключения 404</p>
+      </>
+    );
   }
   return (
     <>
       <div>
-        <SearchComponent searchValue={searchValue} charQuery={charQuery} />
+        <SearchComponent searchValue={searchValue} />
         <Pagination pagination={paginationData} paginate={paginate} />
-        <Outlet />
-        <div className="cardFlex">
-          {!isloading ? (
-            <LoadingComponent />
-          ) : (
-            data
-              .filter((data) => data.name.includes(charQuery))
-              .map((characters) => (
-                <Link
-                  to={`/character/${characters.id}`}
-                  className="card"
-                  key={characters.id}
-                >
-                  <h2> {characters.name}</h2>
-                  <img
-                    className="img"
-                    src={characters?.image}
-                    alt={characters.name}
-                  />
-                </Link>
-              ))
-          )}
+        <div className="mainFlex">
+          <div className="cardFlex">
+            {!isloading ? (
+              <LoadingComponent />
+            ) : (
+              data
+                .filter((data) => data.name.includes(charQuery))
+                .map((characters) => (
+                  <Link
+                    to={`/character/${characters.id}`}
+                    className="card"
+                    key={characters.id}
+                  >
+                    <h2> {characters.name}</h2>
+                    <img
+                      className="img"
+                      src={characters?.image}
+                      alt={characters.name}
+                    />
+                  </Link>
+                ))
+            )}
+          </div>
+          <Outlet />
         </div>
       </div>
     </>

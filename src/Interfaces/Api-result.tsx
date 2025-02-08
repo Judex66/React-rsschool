@@ -4,8 +4,4 @@ export default interface Data {
   status: string;
   gender: string;
   image: string;
-  origin: Origin;
-}
-interface Origin {
-  name: string;
 }
