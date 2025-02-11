@@ -65,6 +65,7 @@ export default function MainPage() {
                   <Link
                     to={`/character/${characters.id}`}
                     className="card"
+                    data-testid="card"
                     key={characters.id}
                   >
                     <h2> {characters.name}</h2>

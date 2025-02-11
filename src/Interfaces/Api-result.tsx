@@ -5,3 +5,10 @@ export default interface Data {
   gender: string;
   image: string;
 }
+export default interface DataSingle {
+  name: string;
+  id: number;
+  status: string;
+  gender: string;
+  image: string;
+}
