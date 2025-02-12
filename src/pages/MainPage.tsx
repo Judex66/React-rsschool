@@ -19,25 +19,29 @@ export default function MainPage() {
   const searchValue = (search: string) => {
     setSearchParams({ character: search });
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await axios
-          .get(
-            `https://rickandmortyapi.com/api/character/?name=${charQuery}&page=${currentPage}`
-          )
-          .then((response) => {
-            const charac = response.data;
-            setData(charac.results);
-            setPaginationData(charac.info.pages);
-            setIsloading(true);
-          });
-      } catch {
-        setError(true);
-      }
-    };
-    fetchData();
-  }, [isloading, charQuery, currentPage]);
+  const { data, error, isLoading } = useGetCharactersQuery({
+    currentPage,
+    name: charQuery,
+  });
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       await axios
+  //         .get(
+  //           `https://rickandmortyapi.com/api/character/?name=${charQuery}&page=${currentPage}`
+  //         )
+  //         .then((response) => {
+  //           const charac = response.data;
+  //           setData(charac.results);
+  //           setPaginationData(charac.info.pages);
+  //           setIsloading(true);
+  //         });
+  //     } catch {
+  //       setError(true);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [isloading, charQuery, currentPage]);
   const paginate = (pageNumber: React.SetStateAction<number>) => {
     setCurrentPage(pageNumber);
     console.log(currentPage);
