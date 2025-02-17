@@ -16,7 +16,11 @@ export default function Pagination({ pagination, paginate }: Pagination) {
     <div className="pagination11">
       {pageNumbers.map((number, index) => (
         <Link key={index} className="page-item" to={`/?page=${number}`}>
-          <a onClick={() => paginate(number)} className="page-link">
+          <a
+            onClick={() => paginate(number)}
+            style={{ textDecoration: 'none' }}
+            className="page-link"
+          >
             {number}
           </a>
         </Link>

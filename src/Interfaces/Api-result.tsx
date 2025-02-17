@@ -1,4 +1,4 @@
-export default interface Data {
+export default interface Results {
   name: string;
   id: number;
   status: string;

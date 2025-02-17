@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Data from '../Interfaces/Api-result';
-import axios from 'axios';
 import LoadingComponent from '../components/Loading';
+import { useGetCharacterQuery } from '../Redux';
+import axios from 'axios';
 
 export default function Character() {
-  const [error, setError] = useState(false);
-  const [isloading, setIsloading] = useState(true);
-  const [data, setData] = useState(Array<Data>());
+  // const [error, setError] = useState(false);
+  // const [isLoading, setIsloading] = useState(true);
+  // const [data, setData] = useState(Array<Data>());
   const { id } = useParams();
+  const { data = [], error, isLoading } = useGetCharacterQuery(id);
   const navigate = useNavigate();
   const clickOutside = useCallback(
     (event: React.MouseEvent): void => {
@@ -18,30 +19,30 @@ export default function Character() {
     },
     [navigate]
   );
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsloading(false);
-      try {
-        await axios
-          .get(`https://rickandmortyapi.com/api/character/${id}`)
-          .then((response) => {
-            const charac = response.data;
-            setData(charac);
-            setIsloading(true);
-          });
-      } catch {
-        setError(true);
-        setIsloading(false);
-      }
-    };
-    fetchData();
-  }, [id]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setIsloading(false);
+  //     try {
+  //       await axios
+  //         .get(`https://rickandmortyapi.com/api/character/${id}`)
+  //         .then((response) => {
+  //           const charac = response.data;
+  //           setData(charac);
+  //           setIsloading(true);
+  //         });
+  //     } catch {
+  //       setError(true);
+  //       setIsloading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [id]);
   if (error) {
     throw new Error('I have crashed!');
   }
   return (
     <>
-      {!isloading ? (
+      {!isLoading ? (
         <LoadingComponent />
       ) : (
         data && (

@@ -11,3 +11,12 @@
 .mainFlex {
   display: flex;
 }
+
+.page-link{
+  color: black;
+  textDecoration: none;
+}
+.page-link.dark{
+  color: white;
+  text-decoration: none;
+}
