@@ -12,11 +12,11 @@
   display: flex;
 }
 
-.page-link{
+.page-link {
   color: black;
-  textDecoration: none;
+  textdecoration: none;
 }
-.page-link.dark{
+.page-link.dark {
   color: white;
   text-decoration: none;
 }

@@ -27,15 +27,9 @@ export default function MainPage() {
   useEffect(() => {
     document.body.className = theme;
   }, [theme]);
-  // useEffect(() => {
-  //   setPaginationData(data.info.pages);
-  // }, [data]);
-  // console.log(data.info.pages);
-  console.log(searchParams);
   const paginate = (pageNumber: React.SetStateAction<number>) => {
     setCurrentPage(pageNumber);
     setSearchParams({ character: searchInput, page: page.toString() });
-    console.log(page);
   };
   if (error) {
     return (
