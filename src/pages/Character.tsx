@@ -25,7 +25,7 @@ export default function Character() {
       ) : (
         data && (
           <div onClick={clickOutside}>
-            <button>Close</button>
+            <button onClick={clickOutside}>Close</button>
             <h2> {data.name}</h2>
             <img className="img" src={data?.image} alt={data.name} />
             <p>{data.gender}</p>

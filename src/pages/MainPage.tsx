@@ -16,20 +16,34 @@ export default function MainPage() {
   const pageQuery = searchParams.get('page') || 1;
   const searchValue = (search: string) => {
     setSearchInput(search);
-    setSearchParams({ character: searchInput, page: page.toString() });
+    setSearchParams({ character: searchInput });
   };
   const {
     data = [Array<Data>()],
     error,
     isLoading,
   } = useGetCharactersQuery({ pageQuery, charQuery });
+  console.log(data);
   const { theme, toggleTheme } = useTheme();
+  useEffect(() => {
+    if (!isLoading) {
+      console.log(isLoading);
+      setPaginationData(data.info.pages);
+    }
+  }, [isLoading, data]);
+  useEffect(() => {
+    setSearchParams({ character: searchInput, page: page.toString() });
+  }, [searchInput, page]);
   useEffect(() => {
     document.body.className = theme;
   }, [theme]);
   const paginate = (pageNumber: React.SetStateAction<number>) => {
     setCurrentPage(pageNumber);
-    setSearchParams({ character: searchInput, page: page.toString() });
+    // setSearchParams({ character: searchInput, page: page.toString() });
+    // console.log(searchInput);
+    // console.log(page.toString());
+    // console.log(charQuery);
+    // console.log(pageQuery);
   };
   if (error) {
     return (
