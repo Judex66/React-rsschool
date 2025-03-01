@@ -8,43 +8,70 @@ import Data from '../Interfaces/Api-result';
 import Results from '../Interfaces/Api-result';
 import { useTheme } from '../theme-context/ThemeProvider';
 export default function MainPage() {
-  const [page, setCurrentPage] = useState(1);
-  const [paginationData, setPaginationData] = useState(5);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [searchInput, setSearchInput] = useState('');
-  const charQuery = searchParams.get('character') || '';
-  const pageQuery = searchParams.get('page') || 1;
-  const searchValue = (search: string) => {
-    setSearchInput(search);
-    setSearchParams({ character: searchInput });
-  };
-  const {
-    data = [Array<Data>()],
-    error,
-    isLoading,
-  } = useGetCharactersQuery({ pageQuery, charQuery });
-  console.log(data);
+  // const [searchParams, setSearchParams] = useSearchParams();
+  // const charQuery = searchParams.get('character') || '';
+  // const pageQuery = searchParams.get('page') || 1;
+  // const [paginationData, setPaginationData] = useState(5);
+  // const initialSearch = charQuery ? String(charQuery) : '';
+  // const [searchPar, setSearchPar] = useState(initialSearch);
+  // const initialPage = pageQuery ? Number(pageQuery) : 1;
+  // const [page, setPage] = useState(initialPage);
+  // const {
+  //   data = [Array<Data>()],
+  //   error,
+  //   isLoading,
+  // } = useGetCharactersQuery({ pageQuery: page, charQuery });
+  // const searchValue = (search: string) => {
+  //   setSearchPar(search);
+  //   setSearchParams({ page: '1', character: searchPar });
+  //   setPage(1);
+  //   console.log(search);
+  //   console.log(charQuery);
+  // };
+  // const paginate = (pageNumber: React.SetStateAction<number>) => {
+  //   setSearchParams({ pageQuery: pageNumber.toString(), charQuery: charQuery });
+  // };
+
   const { theme, toggleTheme } = useTheme();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [charValue, setCharValue] = useState('');
+  // Получаем параметры из URL
+  const charQuery = searchParams.get('search')
+    ? searchParams.get('search')
+    : charValue;
+  const pageParam = searchParams.get('page') ? searchParams.get('page') : '1';
+  const initialPage = pageParam ? Number(pageParam) : 1;
+  const [paginationData, setPaginationData] = useState(5);
+  const [currentPage, setCurrentPage] = useState(initialPage);
+
+  const { data, isLoading, error } = useGetCharactersQuery({
+    pageQuery: pageParam,
+    charQuery: charValue,
+  });
+
+  const searchValue = (newSearchTerm: string) => {
+    if (newSearchTerm !== charValue) {
+      setCharValue(newSearchTerm);
+      setSearchParams({ search: charValue, page: '1' });
+      setCurrentPage(1);
+    }
+  };
+
+  const paginate = (newPage: number) => {
+    if (newPage !== currentPage) {
+      setCurrentPage(newPage);
+      setSearchParams({ search: charValue, page: String(newPage) });
+      console.log();
+    }
+  };
   useEffect(() => {
     if (!isLoading) {
-      console.log(isLoading);
       setPaginationData(data.info.pages);
     }
   }, [isLoading, data]);
   useEffect(() => {
-    setSearchParams({ character: searchInput, page: page.toString() });
-  }, [searchInput, page]);
-  useEffect(() => {
     document.body.className = theme;
   }, [theme]);
-  const paginate = (pageNumber: React.SetStateAction<number>) => {
-    setCurrentPage(pageNumber);
-    // setSearchParams({ character: searchInput, page: page.toString() });
-    // console.log(searchInput);
-    // console.log(page.toString());
-    // console.log(charQuery);
-    // console.log(pageQuery);
-  };
   if (error) {
     return (
       <>
