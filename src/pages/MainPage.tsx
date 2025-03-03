@@ -61,7 +61,6 @@ export default function MainPage() {
     if (newPage !== currentPage) {
       setCurrentPage(newPage);
       setSearchParams({ search: charValue, page: String(newPage) });
-      console.log();
     }
   };
   useEffect(() => {
