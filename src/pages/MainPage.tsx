@@ -46,7 +46,7 @@ export default function MainPage() {
 
   const { data, isLoading, error } = useGetCharactersQuery({
     pageQuery: pageParam,
-    charQuery: charValue,
+    charQuery: charQuery,
   });
 
   const searchValue = (newSearchTerm: string) => {
