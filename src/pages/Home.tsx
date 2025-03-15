@@ -6,13 +6,12 @@ export default function Home() {
       <h1>Главная страница</h1>
       <ul>
         <li>
-          <Link to="/page1">Страница 1</Link>
+          <Link to="/componentUsusal">componentUsusal</Link>
         </li>
         <li>
-          <Link to="/page2">Страница 2</Link>
+          <Link to="/componentRHF">componentRHF</Link>
         </li>
       </ul>
-      {/* Outlet для вложенных маршрутов */}
       <Outlet />
     </div>
   );
