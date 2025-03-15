@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-
+import { Link } from 'react-router-dom';
 const schema = yup.object().shape({
   name: yup
     .string()
@@ -25,6 +25,24 @@ const schema = yup.object().shape({
     .required(),
   gender: yup.string().required(),
   terms: yup.boolean().oneOf([true], 'You must accept terms and conditions'),
+  image: yup
+    .mixed()
+    .test(
+      'fileType',
+      'Only PNG and JPEG are allowed',
+      (value: FileList | null) => {
+        if (!value || value.length === 0) return false;
+        return value[0].type === 'image/png' || value[0].type === 'image/jpeg';
+      }
+    )
+    .test(
+      'fileSize',
+      'The file must be less than 2MB',
+      (value: FileList | null) => {
+        if (!value || value.length === 0) return false;
+        return value[0].size <= 2 * 1024 * 1024;
+      }
+    ),
 });
 
 type FormData = yup.InferType<typeof schema>;
@@ -35,6 +53,7 @@ export default function ComponentRHF() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
+    mode: 'onChange',
     resolver: yupResolver(schema),
   });
 
@@ -44,64 +63,72 @@ export default function ComponentRHF() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label htmlFor="name">Name:</label>
-        <input id="name" {...register('name')} />
-        {errors.name && <p className="errorString">{errors.name.message}</p>}
-      </div>
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div>
+          <label htmlFor="name">Name:</label>
+          <input id="name" {...register('name')} />
+          <p className="errorString">{errors.name?.message}</p>
+        </div>
 
-      <div>
-        <label htmlFor="age">Age:</label>
-        <input id="age" type="number" {...register('age')} />
-        {errors.age && <p className="errorString">{errors.age.message}</p>}
-      </div>
+        <div>
+          <label htmlFor="age">Age:</label>
+          <input id="age" type="number" {...register('age')} />
+          <p className="errorString">{errors.age?.message}</p>
+        </div>
 
-      <div>
-        <label htmlFor="email">Email:</label>
-        <input id="email" type="email" {...register('email')} />
-        {errors.email && <p className="errorString">{errors.email.message}</p>}
-      </div>
+        <div>
+          <label htmlFor="email">Email:</label>
+          <input id="email" type="email" {...register('email')} />
+          <p className="errorString">{errors.email?.message}</p>
+        </div>
 
-      <div>
-        <label htmlFor="password">Password:</label>
-        <input id="password" type="password" {...register('password')} />
-        {errors.password && (
-          <p className="errorString">{errors.password.message}</p>
-        )}
-      </div>
+        <div>
+          <label htmlFor="password">Password:</label>
+          <input id="password" type="password" {...register('password')} />
+          <p className="errorString">{errors.password?.message}</p>
+        </div>
 
-      <div>
-        <label htmlFor="confirmPassword">Confirm Password:</label>
-        <input
-          id="confirmPassword"
-          type="password"
-          {...register('confirmPassword')}
-        />
-        {errors.confirmPassword && (
-          <p className="errorString">{errors.confirmPassword.message}</p>
-        )}
-      </div>
+        <div>
+          <label htmlFor="confirmPassword">Confirm Password:</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            {...register('confirmPassword')}
+          />
+          <p className="errorString">{errors.confirmPassword?.message}</p>
+        </div>
 
-      <div>
-        <label>Gender:</label>
-        <select {...register('gender')}>
-          <option value="">Select...</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </select>
-        {errors.gender && (
-          <p className="errorString">{errors.gender.message}</p>
-        )}
-      </div>
+        <div>
+          <label>Gender:</label>
+          <select {...register('gender')}>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
 
-      <div>
-        <input id="terms" type="checkbox" {...register('terms')} />
-        <label htmlFor="terms">Accept Terms and Conditions</label>
-        {errors.terms && <p className="errorString">{errors.terms.message}</p>}
-      </div>
-      <button type="submit">Submit</button>
-    </form>
+          <p className="errorString">{errors.gender?.message}</p>
+        </div>
+
+        <div>
+          <input id="terms" type="checkbox" {...register('terms')} />
+          <label htmlFor="terms">Accept Terms and Conditions</label>
+          <p className="errorString">{errors.terms?.message}</p>
+        </div>
+
+        <div>
+          <label>Upload image:</label>
+          <input
+            type="file"
+            accept="image/png, image/jpeg"
+            {...register('image')}
+          />
+          <p className="errorString">{errors.image?.message}</p>
+        </div>
+
+        <button type="submit">Submit</button>
+      </form>
+      <Link to="/">Back</Link>
+    </>
   );
 }
