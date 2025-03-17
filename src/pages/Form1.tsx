@@ -1,6 +1,8 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-
+import { addFormData } from '../redux/formData';
+import * as yup from 'yup';
 export default function ComponentUsusal() {
   const nameRef = useRef<HTMLInputElement>(null);
   const ageRef = useRef<HTMLInputElement>(null);
@@ -10,66 +12,70 @@ export default function ComponentUsusal() {
   const genderRef = useRef<HTMLInputElement>(null);
   const termsRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef<HTMLInputElement>(null);
+  const dispatch = useDispatch();
+  const schema = yup.object().shape({
+    name: yup
+      .string()
+      .min(4, 'Name must be has 6 characters')
+      .max(20, 'Name must be shorter than 20 characters')
+      .matches(/^[A-Z][a-z]*$/, 'Name should start with an uppercase letter')
+      .required(),
+    age: yup.number().positive('Age must be positive number').required(),
+    email: yup.string().email('Enter valid email').required(),
+    password: yup
+      .string()
+      .min(6, 'Password must be has 6 characters')
+      .matches(/[A-Z]/, 'Must contain one uppercase letter')
+      .matches(/[a-z]/, 'Must contain one lowercase letter')
+      .matches(/\d/, 'Must contain one number')
+      .matches(/[^A-Za-z0-9]/, 'Must contain one special character')
+      .required(),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref('password')], 'Passwords do not match')
+      .required(),
+    gender: yup.string().required(),
+    terms: yup.boolean().oneOf([true], 'You must accept terms and conditions'),
+    picture: yup
+      .mixed<FileList>()
+      .required()
+      .test(
+        'fileSize',
+        'File too large, it should be less than 2MB',
+        (value) => {
+          if (value) {
+            return value[0].size <= 2 * 1024 * 1240;
+          } else {
+            return true;
+          }
+        }
+      )
+      .test(
+        'fileFormat',
+        'Unsupported format, only JPEG and PNG are allowed',
+        (value) => {
+          if (value) {
+            return ['image/png', 'image/jpeg'].includes(value[0].type);
+          }
+        }
+      ),
+  });
 
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-  const validate = (): boolean => {
-    const newErrors: { [key: string]: string } = {};
-    const name = nameRef.current?.value.trim();
-    const age = ageRef.current?.value.trim();
-    const email = emailRef.current?.value.trim();
-    const password = passwordRef.current?.value.trim();
-    const confirmPassword = confirmPasswordRef.current?.value.trim();
-    const termsChecked = termsRef.current?.checked;
-    const image = imgRef.current?.checked;
-
-    if (!name || !/^[A-Z][a-z]*$/.test(name)) {
-      newErrors.name = 'Name should start with an uppercase letter';
-    }
-
-    if (!age || isNaN(Number(age)) || Number(age) <= 0) {
-      newErrors.age = 'Age must be positive number';
-    }
-
-    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-      newErrors.email = 'Enter valid email';
-    }
-
-    if (!password || password.length < 6) {
-      newErrors.password = 'Password must be has 6 characters';
-    } else if (
-      !/[A-Z]/.test(password) ||
-      !/[a-z]/.test(password) ||
-      !/\d/.test(password) ||
-      !/[^A-Za-z0-9]/.test(password)
-    ) {
-      newErrors.password =
-        'Password must contain uppercase, lowercase, number, and special character';
-    }
-
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    if (!termsChecked) {
-      newErrors.terms = 'You must accept terms and conditions';
-    }
-    const validFormats = ['image/png', 'image/jpeg'];
-    const file = imgRef.current.files[0];
-    if (!validFormats.includes(file.type)) {
-      newErrors.img = 'Only PNG and JPEG are allowed';
-    }
-    if (file[0].size <= 2 * 1024 * 1024) {
-      newErrors.img = 'The file must be less than 2MB';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleFileUpload = (file: File) => {
+    return new Promise((resolve, reject) => {
+      if (!file) {
+        resolve(null);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   };
-
   const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
     if (validate()) {
+      const base64String = await handleFileUpload(imgRef.current?.value);
       const data = {
         name: nameRef.current?.value,
         age: Number(ageRef.current?.value),
@@ -78,7 +84,7 @@ export default function ComponentUsusal() {
         termsAccepted: termsRef.current?.checked,
         image: imgRef.current?.value,
       };
-      console.log(data);
+      dispatch(addFormData(data));
       alert('Successfully!');
     }
   };
@@ -101,7 +107,7 @@ export default function ComponentUsusal() {
         <div>
           <label htmlFor="email">Email:</label>
           <input id="email" type="email" ref={emailRef} />
-          {errors.email && <p className="errorString">{errors.email}</p>}
+          <p className="errorString">{errors?.email}</p>
         </div>
 
         <div>
@@ -137,7 +143,7 @@ export default function ComponentUsusal() {
         </div>
 
         <div>
-          <input type="file" accept="image/png, image/jpeg" ref={imgRef} />
+          <input type="file" ref={imgRef} />
           <p className="errorString">{errors?.img}</p>
         </div>
 

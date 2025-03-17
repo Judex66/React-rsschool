@@ -2,6 +2,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { addFormData } from '../redux/formData';
 const schema = yup.object().shape({
   name: yup
     .string()
@@ -25,22 +27,23 @@ const schema = yup.object().shape({
     .required(),
   gender: yup.string().required(),
   terms: yup.boolean().oneOf([true], 'You must accept terms and conditions'),
-  image: yup
-    .mixed()
-    .test(
-      'fileType',
-      'Only PNG and JPEG are allowed',
-      (value: FileList | null) => {
-        if (!value || value.length === 0) return false;
-        return value[0].type === 'image/png' || value[0].type === 'image/jpeg';
+  picture: yup
+    .mixed<FileList>()
+    .required()
+    .test('fileSize', 'File too large, it should be less than 2MB', (value) => {
+      if (value) {
+        return value[0].size <= 2 * 1024 * 1240;
+      } else {
+        return true;
       }
-    )
+    })
     .test(
-      'fileSize',
-      'The file must be less than 2MB',
-      (value: FileList | null) => {
-        if (!value || value.length === 0) return false;
-        return value[0].size <= 2 * 1024 * 1024;
+      'fileFormat',
+      'Unsupported format, only JPEG and PNG are allowed',
+      (value) => {
+        if (value) {
+          return ['image/png', 'image/jpeg'].includes(value[0].type);
+        }
       }
     ),
 });
@@ -48,6 +51,7 @@ const schema = yup.object().shape({
 type FormData = yup.InferType<typeof schema>;
 
 export default function ComponentRHF() {
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -56,9 +60,25 @@ export default function ComponentRHF() {
     mode: 'onChange',
     resolver: yupResolver(schema),
   });
-
-  const onSubmit = (data: FormData) => {
-    console.log(data);
+  const handleFileUpload = (file: File) => {
+    return new Promise((resolve, reject) => {
+      if (!file) {
+        resolve(null);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+  const onSubmit = async (data: FormData) => {
+    const base64String = await handleFileUpload(data.picture[0]);
+    const formData = {
+      ...data,
+      picture: base64String || '',
+    };
+    dispatch(addFormData(formData));
     alert('Successfully!');
   };
 
@@ -118,11 +138,7 @@ export default function ComponentRHF() {
 
         <div>
           <label>Upload image:</label>
-          <input
-            type="file"
-            accept="image/png, image/jpeg"
-            {...register('image')}
-          />
+          <input type="file" {...register('picture')} />
           <p className="errorString">{errors.image?.message}</p>
         </div>
 
