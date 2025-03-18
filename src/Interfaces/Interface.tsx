@@ -3,6 +3,7 @@ export default interface Country {
     population: number; 
     flags: Flags; 
     region: string; 
+    cca3: string;
   };
  interface Name {
     common: string; 
