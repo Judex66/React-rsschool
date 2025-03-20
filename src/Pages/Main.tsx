@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 function Home() {
   return <>
     <div>
-        <Link to="/Optimization">componentUsusal</Link>
+        <Link to="/Optimization">Optimization</Link>
       </div>
       <div>
-        <Link to="/NoneOptimization">componentRHF</Link>
+        <Link to="/NoneOptimization">NoneOptimization</Link>
       </div>
   
   </>;
