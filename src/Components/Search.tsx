@@ -3,7 +3,7 @@ interface Props {
   searchValue: (search: string) => void;
 }
 export default function SearchComponent({ searchValue }: Props) {
-  const [search, setSearch] = useState<string>(
+  const [search, setSearch] = useState(
     localStorage.getItem('searchValue') || ''
   );
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

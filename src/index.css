@@ -2,13 +2,13 @@
   display: flex;
   flex-direction: column;
 }
-.country-flex{
+.country-flex {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
-.country-flex__country{
+.country-flex__country {
   margin: 15px 0px;
   border: 1px solid black;
   width: 30%;
