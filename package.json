@@ -3,12 +3,15 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://judex66.github.io/React-rsschool",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "format:fix": "prettier --write ."
+    "format:fix": "prettier --write .",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.6.1",
