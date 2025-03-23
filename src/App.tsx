@@ -7,15 +7,15 @@ import { createBrowserRouter, RouterProvider } from 'react-router';
 function App() {
   const router = createBrowserRouter([
     {
-      path: '/',
+      path: '/React-rsschool',
       element: <Home />,
     },
     {
-      path: '/NoneOptimization',
+      path: '/React-rsschool/NoneOptimization',
       element: <NoneOptimization />,
     },
     {
-      path: '/Optimization',
+      path: '/React-rsschool/Optimization',
       element: <Optimization />,
     },
   ]);

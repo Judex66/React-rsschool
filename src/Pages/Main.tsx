@@ -4,10 +4,10 @@ function Home() {
   return (
     <>
       <div>
-        <Link to="/Optimization">Optimization</Link>
+        <Link to="/React-rsschool/Optimization">Optimization</Link>
       </div>
       <div>
-        <Link to="/NoneOptimization">NoneOptimization</Link>
+        <Link to="/React-rsschool/NoneOptimization">NoneOptimization</Link>
       </div>
     </>
   );
